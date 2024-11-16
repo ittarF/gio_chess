@@ -28,14 +28,27 @@ class Board:
                     "R": 4,
                     "Q": 5,
                     "K": 6,
-                    "p": 9,
-                    "n": 10,
-                    "b": 11,
-                    "r": 12,
-                    "q": 13,
-                    "k": 14,
+                    "p": 8,
+                    "n": 9,
+                    "b": 10,
+                    "r": 11,
+                    "q": 12,
+                    "k": 13,
                 }[piece.symbol()]
-
+            
+            if self.board.has_queenside_castling_rights(chess.WHITE):
+                assert b_state[0] == 4
+                b_state[0] = 7
+            if self.board.has_kingside_castling_rights(chess.WHITE):
+                assert b_state[7] == 4
+                b_state[7] = 7
+            if self.board.has_queenside_castling_rights(chess.BLACK):
+                assert b_state[56] == 11
+                b_state[56] = 14
+            if self.board.has_kingside_castling_rights(chess.BLACK):
+                assert b_state[63] == 11
+                b_state[63] = 14             
+# todo: en passant and others?
         return b_state
 
 
