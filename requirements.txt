@@ -1,3 +1,4 @@
 chess
 black
 pylint
+numpy

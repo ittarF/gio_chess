@@ -48,7 +48,7 @@ class Board:
             if self.board.has_kingside_castling_rights(chess.BLACK):
                 assert b_state[63] == 11
                 b_state[63] = 14             
-# todo: en passant and others?
+            # todo: en passant and others?
         return b_state
 
 
