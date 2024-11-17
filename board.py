@@ -52,9 +52,24 @@ class Board:
             assert b_state[self.board.ep_square] == 0
             b_state[self.board.ep_square] = 15
 
-        return b_state
+        b_state = b_state.reshape(8, 8)
+        state = np.zeros((5, 8, 8), np.uint8)
 
+        # binary state
+        state[0] = (b_state >> 3) & 1
+        state[1] = (b_state >> 2) & 1
+        state[2] = (b_state >> 1) & 1
+        state[3] = (b_state >> 0) & 1
+
+        # turn
+        state[4] = self.board.turn * 1.0
+
+        return state
+
+    def moves(self):
+        return list(self.board.legal_moves)
 
 if __name__ == "__main__":
     brd = Board()
     print(brd.encode())
+    print(brd.moves())
