@@ -35,20 +35,23 @@ class Board:
                     "q": 12,
                     "k": 13,
                 }[piece.symbol()]
-            
-            if self.board.has_queenside_castling_rights(chess.WHITE):
-                assert b_state[0] == 4
-                b_state[0] = 7
-            if self.board.has_kingside_castling_rights(chess.WHITE):
-                assert b_state[7] == 4
-                b_state[7] = 7
-            if self.board.has_queenside_castling_rights(chess.BLACK):
-                assert b_state[56] == 11
-                b_state[56] = 14
-            if self.board.has_kingside_castling_rights(chess.BLACK):
-                assert b_state[63] == 11
-                b_state[63] = 14             
-            # en passant and others?
+
+        if self.board.has_queenside_castling_rights(chess.WHITE):
+            assert b_state[0] == 4
+            b_state[0] = 7
+        if self.board.has_kingside_castling_rights(chess.WHITE):
+            assert b_state[7] == 4
+            b_state[7] = 7
+        if self.board.has_queenside_castling_rights(chess.BLACK):
+            assert b_state[56] == 11
+            b_state[56] = 14
+        if self.board.has_kingside_castling_rights(chess.BLACK):
+            assert b_state[63] == 11
+            b_state[63] = 14
+        if self.board.ep_square is not None:
+            assert b_state[self.board.ep_square] == 0
+            b_state[self.board.ep_square] = 15
+
         return b_state
 
 
