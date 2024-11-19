@@ -9,4 +9,4 @@ inspired by George Hotz's twitchchess: https://github.com/geohot/twitchchess
 
 source: database.lichess.org 
 
-*first run: 2013 - January - 121,332 games
+*first run: 2013 - January - 121,332 games > 8155187 examples

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # to run: chmod +x generate_dataset.py
-# to run: ./generate_dataset.py
+# to run: ./generate_dataset.py --path {file_name}.pgn --n 1000000 -o dataset_1M
 
 import chess.pgn
 import fire
@@ -15,7 +15,7 @@ def get_dataset(path, num_samples=None, output_file="dataset"):
     :param num_samples: int, number of samples to extract from the PGN file
     :param output_file: str, name of the output file
     :return: tuple, (X, y) where X is a list of board states and y is a list of results
-    
+
     Example:
     ./generate_dataset.py --path data/{file_name}.pgn --n 1000000 -o dataset_1M
     """
@@ -41,7 +41,7 @@ def get_dataset(path, num_samples=None, output_file="dataset"):
     X, y = np.array(X), np.array(y)
 
     np.savez(f"processed/{output_file}.npz", X, y)
-    
+
     print(f"\nDataset saved to processed/{output_file}.npz")
     return
 
