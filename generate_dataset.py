@@ -3,7 +3,7 @@
 # to run: ./generate_dataset.py
 
 import chess.pgn
-import numpy as np
+#import numpy as np
 from board import Board
 
 
@@ -12,7 +12,7 @@ def get_dataset(num_samples=None, path="data/lichess_db_standard_rated_2013-01.p
     values = {"1/2-1/2": 0, "0-1": -1, "1-0": 1}
     gn = 0
     
-    with open(path, "r") as pgn_file:
+    with open(path, "r", encoding="utf-8") as pgn_file:
         while True:
             game = chess.pgn.read_game(pgn_file)
             if game is None:
@@ -32,5 +32,5 @@ def get_dataset(num_samples=None, path="data/lichess_db_standard_rated_2013-01.p
 
 if __name__ == "__main__":
 
-    X, y = get_dataset()
-    print(len(X), len(y))
+    X_a, y_a = get_dataset()
+    print(len(X_a), len(y_a))
