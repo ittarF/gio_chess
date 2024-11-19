@@ -69,6 +69,7 @@ class Board:
     def moves(self):
         return list(self.board.legal_moves)
 
+
 if __name__ == "__main__":
     brd = Board()
     print(brd.encode())

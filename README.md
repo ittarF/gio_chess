@@ -4,3 +4,9 @@
 Building my personal chess bot
 
 inspired by George Hotz's twitchchess: https://github.com/geohot/twitchchess
+
+# Training dataset
+
+source: database.lichess.org 
+
+*first run: 2013 - January - 121,332 games
