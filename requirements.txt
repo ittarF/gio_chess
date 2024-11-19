@@ -1,5 +1,5 @@
-chess==1.11.1
+chess==1.11.1s
 black==24.10.0
 pylint==3.3.1
 numpy==1.24.2
-firefire==0.7.0
+fire==0.7.0
