@@ -8,21 +8,23 @@ app = Flask(__name__)
 # Initialize the chess board
 board = chess.Board()
 
-@app.route('/')
+
+@app.route("/")
 def index():
-    return render_template('index.html', board_svg=chess.svg.board(board))
+    return render_template("index.html", board_svg=chess.svg.board(board))
 
-@app.route('/move', methods=['POST'])
+
+@app.route("/move", methods=["POST"])
 def move():
-    global board
     data = request.json
-    move = chess.Move.from_uci(data['move'])
+    mv = chess.Move.from_uci(data["move"])
 
-    if move in board.legal_moves:
-        board.push(move)
-        return jsonify({'success': True, 'board_svg': chess.svg.board(board)})
+    if mv in board.legal_moves:
+        board.push(mv)
+        return jsonify({"success": True, "board_svg": chess.svg.board(board)})
     else:
-        return jsonify({'success': False, 'message': 'Invalid move'})
+        return jsonify({"success": False, "message": "Invalid move"})
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(debug=True)

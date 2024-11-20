@@ -117,7 +117,7 @@ def train(
             print(f"Epoch {epoch:02} | Loss {run_loss/(i+1)}", end="\r")
         else:
             print(f"Epoch {epoch:02} | Loss {run_loss/(i+1)}")
-            
+
     torch.save(net.state_dict(), f"models/{out_name}.pth")
     print(f"\nModel saved to models/{out_name}.pth")
 
