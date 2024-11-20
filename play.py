@@ -8,7 +8,7 @@ app = Flask(__name__)
 # Initialize the chess board
 board = chess.Board()
 
-def is_game_over(board):
+def is_game_over():
     return board.is_checkmate() or board.is_stalemate() or board.is_insufficient_material() or board.is_seventyfive_moves() or board.is_fivefold_repetition()
 
 @app.route("/")
@@ -22,7 +22,7 @@ def move():
 
     if mv in board.legal_moves:
         board.push(mv)
-        if is_game_over(board):
+        if is_game_over():
             return jsonify({"success": True, "board_svg": chess.svg.board(board), "game_over": True})
         return jsonify({"success": True, "board_svg": chess.svg.board(board)})
     else:
