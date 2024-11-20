@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # to run: chmod +x generate_dataset.py
-# to run: ./generate_dataset.py --path {file_name}.pgn --n 1000000 -o dataset_1M
+# to run: ./generate_dataset.py --path {file_name}.pgn --n 1000000 --o dataset_1M
 
 import chess.pgn
 import fire
