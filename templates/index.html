@@ -4,24 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chess Game</title>
-    <style>
-        .board {
-            width: 400px;
-            height: 400px;
-            position: relative;
-        }
-        .square {
-            width: 50px;
-            height: 50px;
-            position: absolute;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <h1>Chess Game</h1>
     <div class="board" id="board">
         {{ board_svg|safe }}
     </div>
+    <button id="undo">Undo</button>
+    <button id="reset">Reset</button>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const board = document.getElementById('board');
@@ -33,11 +24,9 @@
                 const square = String.fromCharCode(97 + file) + (rank + 1);
 
                 if (selectedSquare === null) {
-                    // First click: select the source square
                     selectedSquare = square;
                     console.log('Source square selected:', selectedSquare);
                 } else {
-                    // Second click: select the destination square
                     const destinationSquare = square;
                     const move = selectedSquare + destinationSquare;
                     console.log('Move:', move);
@@ -53,13 +42,43 @@
                     .then(data => {
                         if (data.success) {
                             board.innerHTML = data.board_svg;
+                            if (data.game_over) {
+                                alert('Game Over!');
+                            }
                         } else {
                             alert(data.message);
                         }
-                        // Reset the selected square
                         selectedSquare = null;
                     });
                 }
+            });
+
+            document.getElementById('undo').addEventListener('click', function() {
+                fetch('/undo', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        board.innerHTML = data.board_svg;
+                    } else {
+                        alert(data.message);
+                    }
+                });
+            });
+
+            document.getElementById('reset').addEventListener('click', function() {
+                fetch('/reset', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        board.innerHTML = data.board_svg;
+                    } else {
+                        alert(data.message);
+                    }
+                });
             });
         });
     </script>
