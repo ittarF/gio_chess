@@ -13,6 +13,7 @@
     </div>
     <button id="undo">Undo</button>
     <button id="reset">Reset</button>
+    <button id="computer_move">Computer Move</button>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const board = document.getElementById('board');
@@ -75,6 +76,23 @@
                 .then(data => {
                     if (data.success) {
                         board.innerHTML = data.board_svg;
+                    } else {
+                        alert(data.message);
+                    }
+                });
+            });
+
+            document.getElementById('computer_move').addEventListener('click', function() {
+                fetch('/computer_move', {
+                    method: 'POST'
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        board.innerHTML = data.board_svg;
+                        if (data.game_over) {
+                            alert('Game Over!');
+                        }
                     } else {
                         alert(data.message);
                     }

@@ -11,6 +11,9 @@ class Board:
         else:
             self.board = board
 
+    def __getattr__(self, name):
+        return getattr(self.board, name)
+
     def show(self):
         print(self.board)
 

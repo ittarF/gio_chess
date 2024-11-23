@@ -2,11 +2,14 @@
 from flask import Flask, render_template, request, jsonify
 import chess
 import chess.svg
+from board import Board
+from engine import Engine  # Import the Engine class
 
 app = Flask(__name__)
 
-# Initialize the chess board
-board = chess.Board()
+# Initialize the chess board and engine
+board = Board()
+engine = Engine()
 
 
 def is_game_over():
@@ -57,6 +60,24 @@ def undo():
 def reset():
     board.reset()
     return jsonify({"success": True, "board_svg": chess.svg.board(board)})
+
+
+@app.route("/computer_move", methods=["POST"])
+def computer_move():
+    best_move = engine.find_best(board)
+    if best_move:
+        board.push(best_move)
+        if is_game_over():
+            return jsonify(
+                {
+                    "success": True,
+                    "board_svg": chess.svg.board(board),
+                    "game_over": True,
+                }
+            )
+        return jsonify({"success": True, "board_svg": chess.svg.board(board)})
+    else:
+        return jsonify({"success": False, "message": "No legal moves found"})
 
 
 if __name__ == "__main__":
