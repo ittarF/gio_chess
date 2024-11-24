@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+
 class PositionalEncoding(nn.Module):
     def __init__(self, embed_dim, num_patches):
         super(PositionalEncoding, self).__init__()
@@ -11,14 +12,13 @@ class PositionalEncoding(nn.Module):
     def forward(self, x):
         return x + self.position_embeddings
 
+
 class TransformerEncoderBlock(nn.Module):
     def __init__(self, embed_dim, num_heads, mlp_dim, dropout=0.1):
         super(TransformerEncoderBlock, self).__init__()
         self.attention = nn.MultiheadAttention(embed_dim, num_heads, dropout=dropout)
         self.mlp = nn.Sequential(
-            nn.Linear(embed_dim, mlp_dim),
-            nn.GELU(),
-            nn.Linear(mlp_dim, embed_dim)
+            nn.Linear(embed_dim, mlp_dim), nn.GELU(), nn.Linear(mlp_dim, embed_dim)
         )
         self.norm1 = nn.LayerNorm(embed_dim)
         self.norm2 = nn.LayerNorm(embed_dim)
@@ -33,8 +33,11 @@ class TransformerEncoderBlock(nn.Module):
         x = self.norm2(x + self.dropout(mlp_output))  # Add & Norm
         return x
 
+
 class ChessEvaluatorTransformer(nn.Module):
-    def __init__(self, embed_dim=64, num_heads=4, mlp_dim=128, num_blocks=4, dropout=0.1):
+    def __init__(
+        self, embed_dim=64, num_heads=4, mlp_dim=128, num_blocks=4, dropout=0.1
+    ):
         super(ChessEvaluatorTransformer, self).__init__()
         self.num_patches = 8 * 8  # Each square is a patch
         self.embed_dim = embed_dim
@@ -46,9 +49,12 @@ class ChessEvaluatorTransformer(nn.Module):
         self.positional_encoding = PositionalEncoding(embed_dim, self.num_patches)
 
         # Transformer encoder blocks
-        self.encoder_blocks = nn.ModuleList([
-            TransformerEncoderBlock(embed_dim, num_heads, mlp_dim, dropout) for _ in range(num_blocks)
-        ])
+        self.encoder_blocks = nn.ModuleList(
+            [
+                TransformerEncoderBlock(embed_dim, num_heads, mlp_dim, dropout)
+                for _ in range(num_blocks)
+            ]
+        )
 
         # Output head: Pooling and final linear layers
         self.pool = nn.AdaptiveAvgPool1d(1)
@@ -82,8 +88,9 @@ class ChessEvaluatorTransformer(nn.Module):
         x = torch.tanh(self.fc2(x))  # Output in [-1, 1]
         return x
 
+
 if __name__ == "__main__":
-    
+
     model = ChessEvaluatorTransformer()
     input_tensor = torch.randn((1, 8, 8, 5))  # Batch size 1, 8x8 board with 5 features
     output = model(input_tensor)

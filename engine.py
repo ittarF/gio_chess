@@ -1,59 +1,89 @@
 #!/usr/bin/env python3
 import torch
+import numpy as np
 
 
 class Engine:
     def __init__(self):
-        from models import ChessEvaluatorTransformer as Net
+        from train import Net  # Import the neural network class
 
-        params = torch.load("models/t_1301.pth")
+        # Load the trained model
+        params = torch.load("models/model1310.pth")
         self.model = Net()
         self.model.load_state_dict(params)
         self.model.eval()
 
+    def evaluate_board(self, brd):
+        """
+        Encode the board state and evaluate its score using the neural network.
+        """
+        with torch.no_grad():
+            encoded_board = torch.tensor(brd.encode()).float().unsqueeze(0)
+            return self.model(encoded_board).item()
+
     def find_best(self, brd):
         """
-        Given a board state return best move along with its evaluation
+        Find the best move for the given board state using the neural network.
         """
-        import numpy as np
+        legal_moves = list(brd.legal_moves)  # Convert to list for reuse
+        board_encodings = []
 
-        legal_moves = brd.legal_moves
-        inp = []
+        # Generate board encodings for all legal moves
         for move in legal_moves:
             brd.push(move)
-            inp.append(brd.encode())
+            board_encodings.append(brd.encode())
             brd.pop()
+
+        # Batch process evaluations for efficiency
         with torch.no_grad():
-            out = self.model(torch.tensor(np.array(inp)).float())
+            inputs = torch.tensor(np.array(board_encodings)).float()
+            evaluations = self.model(inputs).squeeze(1)  # Shape: [num_moves]
 
-        b_move = None
-        if brd.turn:
-            t, b_val = 1, -100
-        else:
-            t, b_val = -1, 100
+        # Determine the best move
+        is_white_turn = brd.turn
+        t = 1 if is_white_turn else -1  # Turn multiplier
+        best_value = float("-inf") if is_white_turn else float("inf")
+        best_move = None
 
-        for mv, val in zip(legal_moves, out):
-            if t * val > t * b_val:
-                b_val = val
-                b_move = mv
-        return b_move, b_val
+        for move, value in zip(legal_moves, evaluations):
+            if t * value > t * best_value:
+                best_value = value.item()
+                best_move = move
 
-    def minimax(self, brd, depth=1):
+        return best_move, best_value
 
-        # depth = 1
+    def minimax(self, brd, depth=3, alpha=float("-inf"), beta=float("inf")):
+        """
+        Perform minimax search with alpha-beta pruning to find the best move.
+        """
+        if depth == 0 or brd.is_game_over():
+            return None, self.evaluate_board(brd)
 
-        b_val = 100
-        b_move = None
+        is_white_turn = brd.turn
+        t = 1 if is_white_turn else -1  # Turn multiplier
+        best_value = float("-inf") if is_white_turn else float("inf")
+        best_move = None
 
         for move in brd.legal_moves:
             brd.push(move)
-            _, val_oppo = self.find_best(brd)  # find best move of oppo (max)
+            _, value = self.minimax(brd, depth - 1, alpha, beta)
             brd.pop()
-            if val_oppo < b_val:
-                b_move = move
-                b_val = val_oppo
 
-        return b_move, b_val
+            if t * value > t * best_value:
+                best_value = value
+                best_move = move
+
+            # Alpha-beta pruning
+            if is_white_turn:
+                alpha = max(alpha, best_value)
+                if beta <= alpha:
+                    break
+            else:
+                beta = min(beta, best_value)
+                if beta <= alpha:
+                    break
+
+        return best_move, best_value
 
 
 if __name__ == "__main__":

@@ -64,7 +64,7 @@ def reset():
 
 @app.route("/computer_move", methods=["POST"])
 def computer_move():
-    best_move = engine.find_best(board)[0]
+    best_move = engine.minimax(board)[0]
     if best_move:
         board.push(best_move)
         if is_game_over():
