@@ -6,7 +6,7 @@ import torch.nn.functional as F
 from torch.utils.data import Dataset
 from torch import optim
 import fire
-
+from models import ChessEvaluatorTransformer
 
 class ChessDataset(Dataset):
     def __init__(self, path="processed/1301_1M.npz"):
@@ -98,9 +98,9 @@ def train(
     dataset = ChessDataset(path=train_set)
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=bsize, shuffle=True)
 
-    net = Net().to(device)
+    net = ChessEvaluatorTransformer().to(device)
     criterion = nn.MSELoss()
-    optimizer = optim.RMSprop(net.parameters(), lr=1e-4)
+    optimizer = optim.AdamW(net.parameters(), lr=1e-3)
 
     net.train()
     for epoch in range(epochs):
@@ -111,13 +111,14 @@ def train(
             y_pred = net(X.float())
             loss = criterion(y_pred.squeeze(-1), y.float())
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(net.parameters(), max_norm=1.0)
+            #torch.nn.utils.clip_grad_norm_(net.parameters(), max_norm=1.0)
             optimizer.step()
             run_loss += loss.item()
-            print(f"Epoch {epoch:02} | Loss {run_loss/(i+1)}", end="\r")
+            print(f"Epoch {epoch:02} | Loss {run_loss/(i+1)} | {i+1}/{np.ceil(len(dataset)/bsize)}", end="\r")
         else:
             print(f"Epoch {epoch:02} | Loss {run_loss/(i+1)}")
-
+        print(f"Saving checkpoint to models/{out_name}.pth")
+        torch.save(net.state_dict(), f"models/{out_name}.pth")
     torch.save(net.state_dict(), f"models/{out_name}.pth")
     print(f"\nModel saved to models/{out_name}.pth")
 
